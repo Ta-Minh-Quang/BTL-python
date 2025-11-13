@@ -16,11 +16,15 @@ def get_cars_dataframe():
     if conn is None:
         return None
     try:
-        query = "select * from car"
+        query = "SELECT DISTINCT * FROM car"  # THÊM DISTINCT để loại bỏ trùng
         df = pd.read_sql(query, conn)
+
+        # THÊM: Loại bỏ dòng trùng lặp trong pandas
+        df = df.drop_duplicates(subset=['brand', 'model', 'year'], keep='first')
+
         return df
     except Error as e:
-        print(f"Lỗi đọc dữ liệu; {e}")
+        print(f"Lỗi đọc dữ liệu: {e}")
         return None
     finally:
         conn.close()
@@ -28,8 +32,9 @@ def get_cars_dataframe():
 
 df = get_cars_dataframe()
 if df is not None:
-    print(f"📊 Loaded {len(df)} cars from MySQL")
+    print(f"📊 Loaded {len(df)} unique cars from MySQL")
     print(df.head())
+
 
 @app.route('/api/stats')
 def get_stats():
@@ -86,11 +91,9 @@ def search_cars():
             (filtered_cars['year'] >= min_year) &
             (filtered_cars['year'] <= max_year)
             ]
-        
-        filtered_cars = filtered_cars.drop_duplicates(
-            subset=['brand', 'model', 'year', 'color', 'price']
-        )
 
+        # THÊM: Loại bỏ trùng lặp sau khi lọc
+        filtered_cars = filtered_cars.drop_duplicates(subset=['brand', 'model', 'year'])
 
         # Sắp xếp theo giá
         filtered_cars = filtered_cars.sort_values('price')
