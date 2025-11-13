@@ -86,6 +86,11 @@ def search_cars():
             (filtered_cars['year'] >= min_year) &
             (filtered_cars['year'] <= max_year)
             ]
+        
+        filtered_cars = filtered_cars.drop_duplicates(
+            subset=['brand', 'model', 'year', 'color', 'price']
+        )
+
 
         # Sắp xếp theo giá
         filtered_cars = filtered_cars.sort_values('price')
