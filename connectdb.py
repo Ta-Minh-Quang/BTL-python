@@ -7,7 +7,7 @@ def create_database():
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="admin"
+        password="123456"
     )
 
     mycursor = mydb.cursor()
@@ -19,7 +19,7 @@ def create_connection():
         connection = mysql.connector.connect(
             host = 'localhost',
             user = 'root',
-            password = 'admin',
+            password = "123456",
             database = 'car_database'
         )
         if connection.is_connected():
