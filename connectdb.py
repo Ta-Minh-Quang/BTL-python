@@ -1,7 +1,5 @@
 import mysql.connector
-
 from mysql.connector import Error
-
 
 def create_database():
     mydb = mysql.connector.connect(
@@ -23,10 +21,10 @@ def create_connection():
             database = 'car_database'
         )
         if connection.is_connected():
-            print("Ket noi thanh cong")
+            print("Kết nối thành công")
             return connection
     except Error as e:
-        print("Loi ket noi {e}")
+        print(f"Lỗi kết nối {e}")
         return None
     
 def create_table():
@@ -37,30 +35,28 @@ def create_table():
     
     cursor = conn.cursor()
 
-
-
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS car (
             id INT AUTO_INCREMENT PRIMARY KEY,
             brand VARCHAR(50) NOT NULL,
             model VARCHAR(100) NOT NULL,
             year INT,
-            engine_volume DECIMAL(3,1),
+            engine_volume VARCHAR(20),
             fuel_type VARCHAR(20),
             transmission VARCHAR(20),
-            km_driven INT,
             price BIGINT,
             color VARCHAR(30),
+            seats INT,
+            description TEXT,
+            features TEXT,
+            technical TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         ''')
-    print("Da tao bang thanh cong")
+    print("Đã tạo bảng thành công")
 
     cursor.close()
     conn.close()
-
-
-
 
 def insert_sample_data():
     conn = create_connection()
@@ -70,92 +66,170 @@ def insert_sample_data():
     
     cursor = conn.cursor()
 
-    cursor.execute("select count(*) from car")
+    cursor.execute("SELECT COUNT(*) FROM car")
     count = cursor.fetchone()[0]
 
     if count == 0:
+        cars = [
+            # FORD
+            {'id': 1, 'brand': 'Ford', 'model': 'Ranger', 'year': 2023, 'price': 720000000, 'fuel_type': 'Dầu', 'engine_volume': '2.0L',
+             'transmission': 'Số tự động', 'color': 'Trắng', 'seats': 5,
+             'description': 'Bán tải thông dụng nhất Việt Nam, mạnh mẽ, đa dụng. Động cơ Bi-Turbo công nghệ mới.',
+             'features': ['Camera 360', 'Cảm biến áp suất lốp', 'Điều hòa tự động 2 vùng', 'Màn hình cảm ứng 12 inch', 'Apple CarPlay'],
+             'technical': {'power': '210 mã lực', 'torque': '500 Nm', 'consumption': '7.9L/100km', 'warranty': '3 năm'}},
 
-        car_database = [
-            ('Toyota', 'Vios', 2020, 1.5, 'Xăng', 'Số sàn', 30000, 420000000, 'Trắng'),
-            ('Toyota', 'Corolla Altis', 2021, 1.8, 'Xăng', 'CVT', 15000, 720000000, 'Đen'),
-            ('Toyota', 'Camry', 2022, 2.5, 'Xăng', 'CVT', 10000, 1250000000, 'Bạc'),
-            ('Toyota', 'Fortuner', 2021, 2.8, 'Dầu', 'Số tự động', 25000, 1350000000, 'Xám'),
-            ('Toyota', 'Innova', 2020, 2.0, 'Xăng', 'Số tự động', 40000, 850000000, 'Trắng'),
-            ('Toyota', 'Hiace', 2019, 2.8, 'Dầu', 'Số sàn', 80000, 750000000, 'Đen'),
-            ('Toyota', 'Land Cruiser', 2023, 4.5, 'Xăng', 'Số tự động', 5000, 4500000000, 'Trắng'),
-            ('Toyota', 'Raize', 2022, 1.0, 'Xăng', 'CVT', 12000, 420000000, 'Đỏ'),
-            ('Honda', 'City', 2021, 1.5, 'Xăng', 'CVT', 20000, 580000000, 'Trắng'),
-            ('Honda', 'Civic', 2022, 1.8, 'Xăng', 'CVT', 12000, 820000000, 'Đen'),
-            ('Honda', 'CR-V', 2021, 1.5, 'Xăng', 'CVT', 18000, 980000000, 'Bạc'),
-            ('Honda', 'Accord', 2020, 2.4, 'Xăng', 'CVT', 35000, 950000000, 'Xám'),
-            ('Honda', 'HR-V', 2022, 1.5, 'Xăng', 'CVT', 10000, 720000000, 'Trắng'),
-            ('Honda', 'BR-V', 2021, 1.5, 'Xăng', 'CVT', 22000, 620000000, 'Đen'),
-            ('Honda', 'Brio', 2020, 1.2, 'Xăng', 'Số sàn', 45000, 380000000, 'Trắng'),
-            ('Mercedes', 'C300', 2022, 2.0, 'Xăng', 'Số tự động', 8000, 2500000000, 'Đen'),
-            ('Mercedes', 'E350', 2023, 3.0, 'Xăng', 'Số tự động', 5000, 3200000000, 'Trắng'),
-            ('Mercedes', 'GLC300', 2022, 2.0, 'Xăng', 'Số tự động', 12000, 2800000000, 'Bạc'),
-            ('Mercedes', 'S450', 2023, 3.0, 'Xăng', 'Số tự động', 3000, 4500000000, 'Đen'),
-            ('Mercedes', 'G63', 2024, 4.0, 'Xăng', 'Số tự động', 1000, 8500000000, 'Đen'),
-            ('Mercedes', 'C200', 2021, 1.5, 'Xăng', 'Số tự động', 18000, 2200000000, 'Trắng'),
-            ('BMW', '320i', 2021, 2.0, 'Xăng', 'Số tự động', 15000, 1800000000, 'Trắng'),
-            ('BMW', '520i', 2022, 2.0, 'Xăng', 'Số tự động', 9000, 2200000000, 'Đen'),
-            ('BMW', 'X5', 2023, 3.0, 'Xăng', 'Số tự động', 7000, 3500000000, 'Xám'),
-            ('BMW', 'X3', 2022, 2.0, 'Xăng', 'Số tự động', 11000, 2400000000, 'Bạc'),
-            ('BMW', '730Li', 2023, 3.0, 'Xăng', 'Số tự động', 6000, 3800000000, 'Đen'),
-            ('BMW', 'X1', 2021, 1.5, 'Xăng', 'Số tự động', 20000, 1600000000, 'Trắng'),
-            ('Ford', 'Ranger', 2021, 2.0, 'Dầu', 'Số sàn', 45000, 680000000, 'Trắng'),
-            ('Ford', 'Everest', 2022, 2.0, 'Dầu', 'Số tự động', 20000, 1100000000, 'Đen'),
-            ('Ford', 'EcoSport', 2020, 1.5, 'Xăng', 'Số tự động', 55000, 520000000, 'Đỏ'),
-            ('Ford', 'Explorer', 2023, 2.3, 'Xăng', 'Số tự động', 12000, 1300000000, 'Xám'),
-            ('Ford', 'Focus', 2019, 1.5, 'Xăng', 'Số tự động', 65000, 550000000, 'Bạc'),
-            ('Hyundai', 'Accent', 2020, 1.4, 'Xăng', 'Số sàn', 60000, 380000000, 'Trắng'),
-            ('Hyundai', 'Elantra', 2021, 1.6, 'Xăng', 'CVT', 30000, 620000000, 'Đen'),
-            ('Hyundai', 'Tucson', 2022, 1.6, 'Xăng', 'Số tự động', 15000, 850000000, 'Bạc'),
-            ('Hyundai', 'Santa Fe', 2023, 2.5, 'Xăng', 'Số tự động', 8000, 1100000000, 'Xám'),
-            ('Hyundai', 'Grand i10', 2020, 1.2, 'Xăng', 'Số sàn', 52000, 320000000, 'Trắng'),
-            ('Kia', 'Cerato', 2021, 1.6, 'Xăng', 'Số sàn', 35000, 520000000, 'Trắng'),
-            ('Kia', 'Seltos', 2022, 1.5, 'Xăng', 'CVT', 18000, 680000000, 'Đen'),
-            ('Kia', 'Sportage', 2023, 1.6, 'Xăng', 'Số tự động', 12000, 920000000, 'Bạc'),
-            ('Kia', 'Carnival', 2024, 2.2, 'Dầu', 'Số tự động', 5000, 1400000000, 'Xám'),
-            ('Kia', 'K3', 2020, 1.5, 'Xăng', 'CVT', 42000, 480000000, 'Đỏ'),
-            ('Mazda', 'CX-5', 2022, 2.0, 'Xăng', 'Số tự động', 22000, 920000000, 'Đỏ'),
-            ('Mazda', 'CX-8', 2023, 2.5, 'Xăng', 'Số tự động', 13000, 1250000000, 'Trắng'),
-            ('Mazda', 'Mazda3', 2021, 1.5, 'Xăng', 'CVT', 28000, 650000000, 'Đen'),
-            ('Mazda', 'Mazda6', 2020, 2.0, 'Xăng', 'CVT', 35000, 720000000, 'Bạc'),
-            ('VinFast', 'Lux A2.0', 2022, 2.0, 'Xăng', 'Số tự động', 18000, 1100000000, 'Trắng'),
-            ('VinFast', 'Fadil', 2021, 1.4, 'Xăng', 'Số sàn', 42000, 380000000, 'Đen'),
-            ('VinFast', 'VF e34', 2023, 1.5, 'Điện', 'Số tự động', 9000, 690000000, 'Xám'),
-            ('VinFast', 'VF 8', 2023, 2.0, 'Điện', 'Số tự động', 5000, 1200000000, 'Đen'),
-            ('Audi', 'A4', 2022, 2.0, 'Xăng', 'Số tự động', 12000, 2800000000, 'Đen'),
-            ('Audi', 'Q5', 2023, 2.0, 'Xăng', 'Số tự động', 8000, 3200000000, 'Trắng'),
-            ('Audi', 'Q7', 2021, 3.0, 'Xăng', 'Số tự động', 20000, 3500000000, 'Bạc'),
-            ('Lexus', 'ES350', 2023, 3.5, 'Xăng', 'Số tự động', 7000, 3200000000, 'Trắng'),
-            ('Lexus', 'RX350', 2022, 3.5, 'Xăng', 'Số tự động', 14000, 3500000000, 'Đen'),
-            ('Lexus', 'NX350', 2023, 2.5, 'Xăng', 'Số tự động', 8000, 2800000000, 'Xám'),
-            ('Porsche', 'Cayenne', 2023, 3.0, 'Xăng', 'Số tự động', 5000, 5500000000, 'Đen'),
-            ('Porsche', 'Macan', 2022, 2.0, 'Xăng', 'Số tự động', 16000, 3200000000, 'Trắng'),
-            ('Chevrolet', 'Spark', 2021, 1.2, 'Xăng', 'Số sàn', 65000, 320000000, 'Trắng'),
-            ('Chevrolet', 'Trailblazer', 2023, 1.3, 'Xăng', 'CVT', 25000, 850000000, 'Đen'),
-            ('Mitsubishi', 'Xpander', 2022, 1.5, 'Xăng', 'CVT', 32000, 620000000, 'Bạc'),
-            ('Mitsubishi', 'Outlander', 2021, 2.4, 'Xăng', 'CVT', 38000, 780000000, 'Xám'),
-            ('Suzuki', 'Ertiga', 2020, 1.5, 'Xăng', 'Số sàn', 48000, 420000000, 'Trắng'),
-            ('Suzuki', 'Swift', 2022, 1.2, 'Xăng', 'CVT', 22000, 520000000, 'Đỏ'),
-            ('Nissan', 'Sunny', 2019, 1.6, 'Xăng', 'CVT', 60000, 380000000, 'Bạc'),
-            ('Nissan', 'X-Trail', 2021, 2.5, 'Xăng', 'CVT', 28000, 850000000, 'Đen')
+            {'id': 2, 'brand': 'Ford', 'model': 'Everest', 'year': 2023, 'price': 1250000000, 'fuel_type': 'Dầu', 'engine_volume': '2.0L',
+             'transmission': 'Số tự động', 'color': 'Đen', 'seats': 7,
+             'description': 'SUV 7 chỗ cao cấp, thiết kế thể thao. Không gian rộng rãi, công nghệ tiên tiến.',
+             'features': ['Cửa sổ trời', 'Ghế da cao cấp', 'Hệ thống âm thanh B&O', 'Định vị GPS', 'Sạc không dây'],
+             'technical': {'power': '180 mã lực', 'torque': '420 Nm', 'consumption': '8.3L/100km', 'warranty': '5 năm'}},
+
+            # TOYOTA
+            {'id': 3, 'brand': 'Toyota', 'model': 'Vios', 'year': 2023, 'price': 520000000, 'fuel_type': 'Xăng', 'engine_volume': '1.5L',
+             'transmission': 'CVT', 'color': 'Trắng', 'seats': 5,
+             'description': 'Sedan hạng B bán chạy nhất Việt Nam. Tiết kiệm nhiên liệu, vận hành êm ái, chi phí bảo trì thấp.',
+             'features': ['Camera lùi', 'Cảm biến lùi', 'Điều hòa tự động', 'Màn hình cảm ứng 9 inch', 'Camera hành trình'],
+             'technical': {'power': '107 mã lực', 'torque': '140 Nm', 'consumption': '5.7L/100km', 'warranty': '3 năm'}},
+
+            {'id': 4, 'brand': 'Toyota', 'model': 'Corolla Cross', 'year': 2023, 'price': 720000000, 'fuel_type': 'Xăng', 'engine_volume': '1.8L',
+             'transmission': 'CVT', 'color': 'Xám', 'seats': 5,
+             'description': 'SUV hạng C cực kỳ phổ biến. Thiết kế trẻ trung, không gian rộng rãi, vận hành tiết kiệm.',
+             'features': ['Camera 360', 'Cảnh báo điểm mù', 'Phanh khẩn cấp', 'Màn hình 10.1 inch', '2 cổng sạc USB'],
+             'technical': {'power': '140 mã lực', 'torque': '177 Nm', 'consumption': '6.2L/100km', 'warranty': '3 năm'}},
+
+            {'id': 5, 'brand': 'Toyota', 'model': 'Innova', 'year': 2023, 'price': 920000000, 'fuel_type': 'Xăng', 'engine_volume': '2.0L',
+             'transmission': 'Số tự động', 'color': 'Bạc', 'seats': 7,
+             'description': 'MPV đa dụng, phù hợp gia đình và kinh doanh. Không gian rộng rãi, động cơ bền bỉ.',
+             'features': ['Camera lùi', 'Cửa hít', 'Điều hòa tự động 2 vùng', 'Màn hình 8 inch', 'Kết nối Android Auto'],
+             'technical': {'power': '174 mã lực', 'torque': '205 Nm', 'consumption': '7.6L/100km', 'warranty': '3 năm'}},
+
+            # HONDA
+            {'id': 6, 'brand': 'Honda', 'model': 'City', 'year': 2023, 'price': 580000000, 'fuel_type': 'Xăng', 'engine_volume': '1.5L',
+             'transmission': 'CVT', 'color': 'Đỏ', 'seats': 5,
+             'description': 'Sedan hạng B với thiết kế thể thao, động cơ i-VTEC mạnh mẽ, tiết kiệm nhiên liệu.',
+             'features': ['Camera lùi', 'Led tự động', 'Điều hòa tự động', 'Màn hình 8 inch', 'Lazada âm thanh 8 loa'],
+             'technical': {'power': '121 mã lực', 'torque': '145 Nm', 'consumption': '5.8L/100km', 'warranty': '3 năm'}},
+
+            {'id': 7, 'brand': 'Honda', 'model': 'CR-V', 'year': 2023, 'price': 980000000, 'fuel_type': 'Xăng', 'engine_volume': '1.5L',
+             'transmission': 'CVT', 'color': 'Trắng', 'seats': 5,
+             'description': 'SUV hạng C cao cấp với công nghệ an toàn tiên tiến Honda Sensing, không gian thoải mái.',
+             'features': ['Honda Sensing', 'Camera 360', 'Cửa hít', 'Màn hình 9 inch', 'Sạc không dây'],
+             'technical': {'power': '188 mã lực', 'torque': '243 Nm', 'consumption': '6.7L/100km', 'warranty': '3 năm'}},
+
+            # HYUNDAI
+            {'id': 8, 'brand': 'Hyundai', 'model': 'Accent', 'year': 2023, 'price': 480000000, 'fuel_type': 'Xăng', 'engine_volume': '1.4L',
+             'transmission': 'CVT', 'color': 'Bạc', 'seats': 5,
+             'description': 'Sedan hạng B giá tốt, thiết kế hiện đại, trang bị đầy đủ tính năng an toàn.',
+             'features': ['Camera lùi', 'Cảm biến lùi', 'Điều hòa tự động', 'Màn hình 8 inch', 'Cửa sổ trời'],
+             'technical': {'power': '100 mã lực', 'torque': '136 Nm', 'consumption': '5.5L/100km', 'warranty': '3 năm'}},
+
+            {'id': 9, 'brand': 'Hyundai', 'model': 'Creta', 'year': 2023, 'price': 620000000, 'fuel_type': 'Xăng', 'engine_volume': '1.5L',
+             'transmission': 'CVT', 'color': 'Xanh', 'seats': 5,
+             'description': 'SUV hạng B thiết kế cá tính, công nghệ hiện đại, giá cả cạnh tranh.',
+             'features': ['Camera lùi', 'Cảnh báo điểm mù', 'Điều hòa tự động', 'Màn hình 10.25 inch', 'Sunroof'],
+             'technical': {'power': '115 mã lực', 'torque': '144 Nm', 'consumption': '6.0L/100km', 'warranty': '3 năm'}},
+
+            # KIA
+            {'id': 10, 'brand': 'Kia', 'model': 'Seltos', 'year': 2023, 'price': 650000000, 'fuel_type': 'Xăng', 'engine_volume': '1.4L',
+             'transmission': 'Số tự động', 'color': 'Cam', 'seats': 5,
+             'description': 'SUV hạng B với thiết kế trẻ trung, động cơ tăng áp, tính năng an toàn đầy đủ.',
+             'features': ['Camera lùi', 'Cảnh báo điểm mù', 'Điều hòa tự động', 'Màn hình 10.25 inch', 'Âm thanh Bose'],
+             'technical': {'power': '140 mã lực', 'torque': '242 Nm', 'consumption': '6.2L/100km', 'warranty': '3 năm'}},
+
+            {'id': 11, 'brand': 'Kia', 'model': 'K3', 'year': 2023, 'price': 590000000, 'fuel_type': 'Xăng', 'engine_volume': '1.6L',
+             'transmission': 'CVT', 'color': 'Xám', 'seats': 5,
+             'description': 'Sedan hạng C thiết kế thể thao, công nghệ hiện đại, vận hành êm ái.',
+             'features': ['Camera lùi', 'Cảm biến lùi', 'Điều hòa tự động 2 vùng', 'Màn hình 10.25 inch', 'Ventilated seats'],
+             'technical': {'power': '128 mã lực', 'torque': '157 Nm', 'consumption': '6.1L/100km', 'warranty': '3 năm'}},
+
+            # MITSUBISHI
+            {'id': 12, 'brand': 'Mitsubishi', 'model': 'Xpander', 'year': 2023, 'price': 560000000, 'fuel_type': 'Xăng', 'engine_volume': '1.5L',
+             'transmission': 'CVT', 'color': 'Nâu', 'seats': 7,
+             'description': 'MPV 7 chỗ bán chạy nhất phân khúc. Thiết kế Dynamic Shield, không gian linh hoạt.',
+             'features': ['Camera lùi', 'Cảm biến lùi', 'Điều hòa tự động', 'Màn hình 9 inch', 'Cửa trượt điện'],
+             'technical': {'power': '105 mã lực', 'torque': '141 Nm', 'consumption': '6.6L/100km', 'warranty': '3 năm'}},
+
+            {'id': 13, 'brand': 'Mitsubishi', 'model': 'Triton', 'year': 2023, 'price': 680000000, 'fuel_type': 'Dầu', 'engine_volume': '2.4L',
+             'transmission': 'Số tự động', 'color': 'Trắng', 'seats': 5,
+             'description': 'Bán tải mạnh mẽ với hệ thống siêu chọn lọc 4WD, khả năng off-road vượt trội.',
+             'features': ['Camera lùi', 'Cảm biến lùi', 'Điều hòa tự động', 'Màn hình 9 inch', 'Phanh điện tử'],
+             'technical': {'power': '181 mã lực', 'torque': '430 Nm', 'consumption': '7.8L/100km', 'warranty': '3 năm'}},
+
+            # MAZDA
+            {'id': 14, 'brand': 'Mazda', 'model': 'CX-5', 'year': 2023, 'price': 890000000, 'fuel_type': 'Xăng', 'engine_volume': '2.0L',
+             'transmission': 'Số tự động', 'color': 'Đỏ', 'seats': 5,
+             'description': 'SUV hạng C với thiết kế KODO đẹp mắt, vận hành linh hoạt, nội thất sang trọng.',
+             'features': ['Camera 360', 'Cảnh báo điểm mù', 'Điều hòa tự động 2 vùng', 'Màn hình 10.25 inch', 'Âm thanh Bose'],
+             'technical': {'power': '154 mã lực', 'torque': '196 Nm', 'consumption': '6.7L/100km', 'warranty': '3 năm'}},
+
+            {'id': 15, 'brand': 'Mazda', 'model': 'Mazda3', 'year': 2023, 'price': 720000000, 'fuel_type': 'Xăng', 'engine_volume': '1.5L',
+             'transmission': 'Số tự động', 'color': 'Xám', 'seats': 5,
+             'description': 'Sedan hạng C thiết kế thể thao, nội thất cao cấp, công nghệ an toàn i-ACTIVSENSE.',
+             'features': ['Camera lùi', 'Cảnh báo điểm mù', 'Điều hòa tự động', 'Màn hình 8.8 inch', 'Heads-up display'],
+             'technical': {'power': '118 mã lực', 'torque': '153 Nm', 'consumption': '5.9L/100km', 'warranty': '3 năm'}},
+
+            # VINFAST
+            {'id': 16, 'brand': 'VinFast', 'model': 'VF 5', 'year': 2023, 'price': 458000000, 'fuel_type': 'Điện', 'engine_volume': 'Điện',
+             'transmission': 'Số tự động', 'color': 'Trắng', 'seats': 5,
+             'description': 'XE điện cỡ A thông minh, thiết kế trẻ trung, phù hợp đô thị. Sạc nhanh 30 phút.',
+             'features': ['Màn hình 10.1 inch', 'Kết nối 4G', 'Điều hòa tự động', 'Camera lùi', 'Hệ thống giải trí thông minh'],
+             'technical': {'power': '118 mã lực', 'torque': '190 Nm', 'consumption': '11.5 kWh/100km', 'warranty': '7 năm'}},
+
+            {'id': 17, 'brand': 'VinFast', 'model': 'VF e34', 'year': 2023, 'price': 690000000, 'fuel_type': 'Điện', 'engine_volume': 'Điện',
+             'transmission': 'Số tự động', 'color': 'Xám', 'seats': 5,
+             'description': 'XE điện cỡ C với trợ lý ảo thông minh, công nghệ Vingroup, bảo hành pin 10 năm.',
+             'features': ['Trợ lý ảo', 'Màn hình 15.4 inch', 'Sạc nhanh DC', 'Cảnh báo điểm mù', 'Kết nối 5G'],
+             'technical': {'power': '150 mã lực', 'torque': '242 Nm', 'consumption': '15.5 kWh/100km', 'warranty': '10 năm'}},
+
+            # SUZUKI
+            {'id': 18, 'brand': 'Suzuki', 'model': 'Ertiga', 'year': 2023, 'price': 520000000, 'fuel_type': 'Xăng', 'engine_volume': '1.5L',
+             'transmission': 'CVT', 'color': 'Xanh', 'seats': 7,
+             'description': 'MPV 7 chỗ giá rẻ, tiết kiệm nhiên liệu, phù hợp gia đình và kinh doanh vận tải.',
+             'features': ['Camera lùi', 'Cảm biến lùi', 'Điều hòa tự động', 'Màn hình 8 inch', 'Túi khí đôi'],
+             'technical': {'power': '105 mã lực', 'torque': '138 Nm', 'consumption': '6.2L/100km', 'warranty': '3 năm'}},
+
+            # CHEVROLET
+            {'id': 19, 'brand': 'Chevrolet', 'model': 'Colorado', 'year': 2023, 'price': 710000000, 'fuel_type': 'Dầu', 'engine_volume': '2.8L',
+             'transmission': 'Số tự động', 'color': 'Đỏ', 'seats': 5,
+             'description': 'Bán tải mạnh mẽ với động cơ Duramax, khả năng kéo tốt, thiết kế hiện đại.',
+             'features': ['Camera lùi', 'Cảm biến lùi', 'Điều hòa tự động', 'Màn hình 8 inch', 'Apple CarPlay'],
+             'technical': {'power': '200 mã lực', 'torque': '500 Nm', 'consumption': '8.5L/100km', 'warranty': '3 năm'}},
         ]
+
+        # Chuyển đổi dữ liệu từ dictionary sang tuple
+        car_data = []
+        for car in cars:
+            car_tuple = (
+                car['brand'],
+                car['model'],
+                car['year'],
+                car['engine_volume'],
+                car['fuel_type'],
+                car['transmission'],
+                car['price'],
+                car['color'],
+                car['seats'],
+                car['description'],
+                ', '.join(car['features']),  # Chuyển list features thành string
+                str(car['technical'])  # Chuyển dictionary technical thành string
+            )
+            car_data.append(car_tuple)
+
+        insert_query = """INSERT INTO car (brand, model, year, engine_volume, fuel_type, transmission, 
+                         price, color, seats, description, features, technical) 
+                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+
+        cursor.executemany(insert_query, car_data)
+        conn.commit()
+        print(f"Đã thêm {cursor.rowcount} xe vào database")
+
     else:
-        car_database = []
+        print("Dữ liệu đã tồn tại, không cần thêm mới")
 
-    insert_query = "insert into car (brand, model, year, engine_volume, fuel_type, transmission, km_driven, price, color) " \
-    "values(%s, %s, %s, %s, %s, %s, %s, %s, %s)" 
+    cursor.close()
+    conn.close()
 
-    cursor.executemany(insert_query, car_database)
-
-    conn.commit()
-
-    print(cursor.rowcount)
-
-
+# Chạy chương trình
 create_database()
 create_table()
 insert_sample_data()
